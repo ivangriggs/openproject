@@ -32,9 +32,17 @@ module API
   module V3
     module Groups
       class GroupRepresenter < ::API::V3::Principals::PrincipalRepresenter
+        include API::Decorators::LinkedResource
+
         def _type
           'Group'
         end
+
+        associated_resources :members,
+                             representer: API::V3::Users::UserRepresenter,
+                             v3_path: :user,
+                             skip_render: -> { !current_user.allowed_to_globally?(:manage_members) }
+
       end
     end
   end
